@@ -1,0 +1,121 @@
+/* General Wrapper */
+.calendar-wrapper {
+    max-width: 600px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background: linear-gradient(145deg, #ffffff, #e8f0f7);
+    border-radius: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .calendar-wrapper:hover {
+    transform: scale(1.02);
+  }
+  
+  /* Header Styling */
+  .calendar-header {
+    margin-bottom: 1.5rem;
+  }
+  
+  .calendar-header h1 {
+    font-family: "Poppins", sans-serif;
+    font-size: 2rem;
+    color: #3f51b5;
+    margin: 0;
+  }
+  
+  .calendar-header p {
+    font-family: "Poppins", sans-serif;
+    font-size: 1rem;
+    color: #6a6a6a;
+  }
+  
+  /* React Calendar Styling */
+  .react-calendar {
+    border: none;
+    font-family: "Poppins", sans-serif;
+    background: transparent;
+  }
+  
+  .react-calendar__tile {
+    padding: 15px;
+    border-radius: 12px;
+    background: transparent;
+    transition: all 0.3s ease-in-out;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .react-calendar__tile:hover {
+    background: #d1e9ff;
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+  }
+  
+  .react-calendar__tile--now {
+    background: #fce88b;
+    border-radius: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .react-calendar__tile--active {
+    background: #3f51b5 !important;
+    color: white !important;
+    border-radius: 12px;
+    font-weight: bold;
+  }
+  
+  /* Highlight Dates with Events */
+  .highlighted-date {
+    background: #ffcdd2;
+    color: #333;
+    border-radius: 12px;
+    font-weight: bold;
+    position: relative;
+  }
+  
+  .highlighted-date:hover {
+    background: #ef9a9a;
+  }
+  
+  /* Event Badge */
+  .event-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #f44336;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Navigation Styling */
+  .react-calendar__navigation {
+    margin-bottom: 1rem;
+  }
+  
+  .react-calendar__navigation button {
+    font-family: "Poppins", sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #3f51b5;
+    background: transparent;
+    border: none;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .react-calendar__navigation button:hover {
+    color: #1a237e;
+    transform: scale(1.1);
+  }
