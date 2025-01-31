@@ -17,7 +17,7 @@ const StyledButton = styled(Button)({
   },
 });
 
-const Leadenquiry = () => {
+const Dropped = () => {
   const [data, setData] = useState([]); // Holds the fetched data
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
@@ -132,13 +132,8 @@ const Leadenquiry = () => {
         }}
       >
         <Typography variant="h5" sx={{ fontWeight: "bold", color: "#2b3674" }}>
-          All Enquiries List
+          Dropped List
         </Typography>
-        <Box sx={{ display: "flex", gap: "10px" }}>
-          <Link to="/create-leadenquiry">
-            <StyledButton>Create Enquiry</StyledButton>
-          </Link>
-        </Box>
       </Box>
 
       {/* DataGrid Table */}
@@ -164,4 +159,4 @@ const Leadenquiry = () => {
   );
 };
 
-export default Leadenquiry;
+export default Dropped;

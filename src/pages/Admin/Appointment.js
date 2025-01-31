@@ -185,7 +185,7 @@ const Appointment = () => {
         variant="h5"
         sx={{ fontWeight: "bold", marginBottom: "15px" }}
       >
-        Appointment List
+        Scheduled List
       </Typography>
 
       <Grid container spacing={2}>

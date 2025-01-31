@@ -46,8 +46,6 @@ const Property = () => {
     fetchProperties();
   }, []);
 
-
-
   // Filtered Rows for Search
   const filteredProperties = properties.filter(
     (property) =>
@@ -80,7 +78,7 @@ const Property = () => {
     { field: "minPrice", headerName: "Min Price", flex: 1 },
     { field: "maxPrice", headerName: "Max Price", flex: 1 },
     { field: "numberOfFloors", headerName: "Floors", flex: 1 },
-   
+
     {
       field: "actions",
       headerName: "Actions",
@@ -130,7 +128,9 @@ const Property = () => {
       try {
         const res = await axios.delete(`/api/properties/${id}`);
         if (res.status === 200) {
-          setProperties((prev) => prev.filter((property) => property._id !== id));
+          setProperties((prev) =>
+            prev.filter((property) => property._id !== id)
+          );
           alert("Property deleted successfully!");
         }
       } catch (error) {
@@ -153,7 +153,7 @@ const Property = () => {
         }}
       >
         <Typography variant="h5" sx={{ fontWeight: "bold", color: "#2b3674" }}>
-          All Property List
+          All Projects List
         </Typography>
         <Box sx={{ display: "flex", gap: "10px" }}>
           <TextField

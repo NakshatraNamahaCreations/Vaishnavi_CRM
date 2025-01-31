@@ -19,6 +19,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import moment from "moment";
 
 const StyledButton = styled(Button)({
   fontFamily: "Poppins",
@@ -30,7 +31,7 @@ const StyledButton = styled(Button)({
   },
 });
 
-const Usermanagement = () => {
+const Sales = () => {
   const [rows, setRows] = useState([]);
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -87,38 +88,33 @@ const Usermanagement = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phonenumber, setphonenumber] = useState("");
-  const [alternatenumber, setAlternatenumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmpassword, setconfirmpassword] = useState("");
-  const [role, setRole] = useState("");
-  const [executive, setExecutive] = useState("");
 
-  const createUser = async () => {
+  const createSales = async () => {
     if (!name || !email || !phonenumber || !password || !confirmpassword) {
       return alert("Please fill all the fields");
     }
     try {
       let config = {
-        url: "/api/admin/register",
+        url: "/api/sales/register",
         method: "POST",
         headers: { "content-type": "application/json" },
         data: {
           name: name,
           email: email,
           password: password,
-          roles: role,
           phonenumber: phonenumber,
         },
       };
       let res = await axios(config);
       if (res.status === 201) {
-        alert("User created successfully!");
+        alert("Sales created successfully!");
         setName("");
         setEmail("");
         setphonenumber("");
         setPassword("");
         setconfirmpassword("");
-
         setIsDrawerOpen(false);
       } else {
         alert(`Error: ${res.status}`);
@@ -130,22 +126,18 @@ const Usermanagement = () => {
 
   const token = localStorage.getItem("authToken");
 
-  const [data, setData] = useState([]);
+  const [sales, setSales] = useState([]);
+  console.log(sales, "sales");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const getUser = async () => {
-      const token = localStorage.getItem("authToken");
+    const getSales = async () => {
       try {
-        const res = await axios.get("/api/admin/", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await axios.get("/api/sales/");
 
         if (res.status === 200) {
-          setData(res.data.data); // Update state with the response data
+          setSales(res.data);
         }
       } catch (error) {
         console.error("Error fetching data: ", error);
@@ -155,7 +147,7 @@ const Usermanagement = () => {
       }
     };
 
-    getUser();
+    getSales();
   }, []);
 
   const handleCreateUserClick = () => {
@@ -163,7 +155,7 @@ const Usermanagement = () => {
     setName("");
     setEmail("");
     setphonenumber("");
-    setAlternatenumber("");
+
     setPassword("");
     setconfirmpassword("");
 
@@ -172,7 +164,22 @@ const Usermanagement = () => {
 
   // Table Columns
   const columns = [
-    // { field: "id", headerName: "SL", flex: 0.3 },
+    {
+      field: "slNo",
+      headerName: "Sl No",
+      flex: 0.5,
+      renderCell: (params) =>
+        params.api.getRowIndexRelativeToVisibleRows(params.id) + 1,
+    },
+    {
+      field: "createdAt",
+      headerName: "Date",
+      flex: 1,
+      renderCell: (params) =>
+        params.value
+          ? moment(params.value).format("YYYY-MM-DD hh:mm A")
+          : "N/A",
+    },
     { field: "name", headerName: "Name", flex: 1 },
     { field: "email", headerName: "Email", flex: 1 },
     { field: "phonenumber", headerName: "Phone Number", flex: 1 },
@@ -191,7 +198,7 @@ const Usermanagement = () => {
         >
           <Link
             to={{
-              pathname: `/userdetails/${params?.row._id}`,
+              // pathname: `/userdetails/${params?.row._id}`,
               state: { user: params.row },
             }}
           >
@@ -278,7 +285,7 @@ const Usermanagement = () => {
             color: "#2b3674",
           }}
         >
-          User List
+          Sales List
         </Typography>
         <Box
           sx={{
@@ -291,8 +298,8 @@ const Usermanagement = () => {
           <TextField
             placeholder="Search User name..."
             variant="outlined"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            // value={searchTerm}
+            // onChange={(e) => setSearchTerm(e.target.value)}
             sx={{
               width: isMobile ? "100%" : 300,
               "& .MuiOutlinedInput-root": {
@@ -318,7 +325,7 @@ const Usermanagement = () => {
             onClick={handleCreateUserClick}
             sx={{ width: isMobile ? "100%" : "auto" }}
           >
-            Create User
+            Create Sales
           </StyledButton>
         </Box>
       </Box>
@@ -326,7 +333,7 @@ const Usermanagement = () => {
       {/* DataGrid Table */}
       <div style={{ height: 400, width: "100%" }}>
         <DataGrid
-          rows={data}
+          rows={sales}
           columns={
             isMobile ? columns.filter((col) => col.field !== "number") : columns
           }
@@ -411,7 +418,7 @@ const Usermanagement = () => {
 
           <StyledButton
             fullWidth
-            onClick={createUser}
+            onClick={createSales}
             sx={{ marginTop: "20px" }}
           >
             Save
@@ -422,4 +429,4 @@ const Usermanagement = () => {
   );
 };
 
-export default Usermanagement;
+export default Sales;

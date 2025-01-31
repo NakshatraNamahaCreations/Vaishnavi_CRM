@@ -52,7 +52,14 @@ const Convert = () => {
   const isMobile = useMediaQuery("(max-width:600px)");
 
   const columns = [
-    { field: "_id", headerName: "Enquiry Id", flex: 1 },
+    {
+      field: "slNo",
+      headerName: "Sl No",
+      flex: 0.5,
+      renderCell: (params) =>
+        params.api.getRowIndexRelativeToVisibleRows(params.id) + 1,
+    },
+    // { field: "_id", headerName: "Enquiry Id", flex: 1 },
     { field: "fullName", headerName: "Customer Name", flex: 1 },
     { field: "phoneNumber", headerName: "Phone Number", flex: 1 },
     { field: "status", headerName: "Customer Status", flex: 1 },

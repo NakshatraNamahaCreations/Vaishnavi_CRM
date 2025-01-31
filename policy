@@ -1,0 +1,55 @@
+{
+	"Version": "2012-10-17",
+	"Id": "Policy1735983792654",
+	"Statement": [
+		{
+			"Sid": "Stmt1735983790783",
+			"Effect": "Allow",
+			"Principal": "*",
+			"Action": "s3:GetObject",
+			"Resource": "arn:aws:s3:::nithyaevent-website/*"
+		},
+		{
+			"Sid": "AllowAmplifyToListPrefix_d222qs35p3e41a_staging_",
+			"Effect": "Allow",
+			"Principal": {
+				"Service": "amplify.amazonaws.com"
+			},
+			"Action": "s3:ListBucket",
+			"Resource": "arn:aws:s3:::nithyaevent-website",
+			"Condition": {
+				"StringEquals": {
+					"aws:SourceAccount": "841162666349",
+					"s3:prefix": "",
+					"aws:SourceArn": "arn%3Aaws%3Aamplify%3Aus-east-1%3A841162666349%3Aapps%2Fd222qs35p3e41a%2Fbranches%2Fstaging"
+				}
+			}
+		},
+		{
+			"Sid": "AllowAmplifyToReadPrefix_d222qs35p3e41a_staging_",
+			"Effect": "Allow",
+			"Principal": {
+				"Service": "amplify.amazonaws.com"
+			},
+			"Action": "s3:GetObject",
+			"Resource": "arn:aws:s3:::nithyaevent-website/*",
+			"Condition": {
+				"StringEquals": {
+					"aws:SourceAccount": "841162666349",
+					"aws:SourceArn": "arn%3Aaws%3Aamplify%3Aus-east-1%3A841162666349%3Aapps%2Fd222qs35p3e41a%2Fbranches%2Fstaging"
+				}
+			}
+		},
+		{
+			"Effect": "Deny",
+			"Principal": "*",
+			"Action": "s3:*",
+			"Resource": "arn:aws:s3:::nithyaevent-website/*",
+			"Condition": {
+				"Bool": {
+					"aws:SecureTransport": "false"
+				}
+			}
+		}
+	]
+}

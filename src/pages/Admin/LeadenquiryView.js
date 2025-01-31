@@ -360,7 +360,7 @@ const EnquiryEdit = () => {
                 }}
               />
               <Chip
-                label="Appointment"
+                label="Schedule Visit"
                 onClick={() => handleChipToggle("Appointment")}
                 sx={{
                   marginRight: "10px",
@@ -436,7 +436,10 @@ const EnquiryEdit = () => {
                     onChange={(e) => setFollowupStatus(e.target.value)}
                     label="Follow-Up Status *"
                   >
-                    <MenuItem value="Interested">Interested</MenuItem>
+                    <MenuItem value="RNR">RNR</MenuItem>
+                    <MenuItem value="Call Later">Call Later</MenuItem>
+                    <MenuItem value="Interested"> Interested</MenuItem>
+                    <MenuItem value="Not Interested"> Not Interested</MenuItem>
                   </Select>
                 </FormControl>
                 <Button
@@ -471,7 +474,7 @@ const EnquiryEdit = () => {
                     color: "#333",
                   }}
                 >
-                  Appointment Details
+                  Schedule visit
                 </Typography>
 
                 {/* Date & Time Row */}

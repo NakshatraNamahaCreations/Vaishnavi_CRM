@@ -200,6 +200,26 @@ const LeadeEnquiryLeadId = () => {
     getAllAppointment();
   }, []);
 
+  const handleUpdateLeadStatus = async (leadId) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8005/api/lead/leads/status/${leadId}`,
+        { status: "Converted" }, // Make sure this matches what your backend expects
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Update Success:", response.data);
+    } catch (error) {
+      console.error(
+        "Error updating lead status:",
+        error.response?.data || error.message
+      );
+    }
+  };
+
   return (
     <Box sx={{ padding: "20px" }}>
       <Grid container spacing={2}>
@@ -282,6 +302,7 @@ const LeadeEnquiryLeadId = () => {
                   <Table>
                     <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
                       <TableRow>
+                        <TableCell sx={{ fontWeight: "bold" }}>Date</TableCell>
                         <TableCell sx={{ fontWeight: "bold" }}>
                           Customer Name
                         </TableCell>
@@ -297,6 +318,11 @@ const LeadeEnquiryLeadId = () => {
                       {followpData?.length > 0 ? (
                         followpData?.map((row, index) => (
                           <TableRow key={index}>
+                            <TableCell>
+                              {moment(row?.createdAt).format(
+                                "DD-MM-YYYY hh:mm A"
+                              ) || "N/A"}
+                            </TableCell>
                             <TableCell>
                               {row?.leadId?.fullName || "N/A"}
                             </TableCell>
@@ -331,12 +357,13 @@ const LeadeEnquiryLeadId = () => {
                   variant="h6"
                   sx={{ fontWeight: "bold", marginBottom: "10px" }}
                 >
-                  Appointment
+                  Schedule visit
                 </Typography>
                 <Paper sx={{ width: "100%", overflow: "hidden" }}>
                   <Table>
                     <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
                       <TableRow>
+                        <TableCell sx={{ fontWeight: "bold" }}>Date</TableCell>
                         <TableCell sx={{ fontWeight: "bold" }}>
                           Customer Name
                         </TableCell>
@@ -352,6 +379,11 @@ const LeadeEnquiryLeadId = () => {
                       {appointmentData.length > 0 ? (
                         appointmentData.map((row, index) => (
                           <TableRow key={index}>
+                            <TableCell>
+                              {moment(row?.createdAt).format(
+                                "DD-MM-YYYY HM:a"
+                              ) || "N/A"}
+                            </TableCell>
                             <TableCell>{findData?.fullName || "N/A"}</TableCell>
                             <TableCell>{row.date || "N/A"}</TableCell>
                             <TableCell>{row.status || "N/A"}</TableCell>
@@ -463,6 +495,22 @@ const LeadeEnquiryLeadId = () => {
               />
             </Box>
 
+            <Box sx={{ marginBottom: "10px" }}>
+              <Typography sx={{ fontWeight: "bold", marginBottom: "5px" }}>
+                Booking Status
+              </Typography>
+
+              <Chip
+                label="Confirm Book"
+                sx={{
+                  marginRight: "10px",
+                  backgroundColor: "#FF9800",
+                  color: "white",
+                }}
+                onClick={() => handleUpdateLeadStatus(leadId)}
+              />
+            </Box>
+
             {/* Follow-Up and Appointment Chips */}
             <Box sx={{ marginBottom: "10px" }}>
               <Chip
@@ -477,7 +525,7 @@ const LeadeEnquiryLeadId = () => {
                 }}
               />
               <Chip
-                label="Appointment"
+                label="Schedule Visit"
                 onClick={() => handleChipToggle("Appointment")}
                 sx={{
                   marginRight: "10px",
@@ -574,7 +622,7 @@ const LeadeEnquiryLeadId = () => {
                     color: "#333",
                   }}
                 >
-                  Appointment Details
+                  Schedule Visit Details
                 </Typography>
 
                 {/* Date & Time Row */}

@@ -3,27 +3,12 @@ import { Box, Grid, TextField, Typography, Button, Chip } from "@mui/material";
 import axios from "axios";
 
 const Createleadenquiry = () => {
-  // const handleInputChange = (field, value) => {
-  //   setFormData((prev) => ({ ...prev, [field]: value }));
-  // };
-
-  // const handleChipToggle = (field, value) => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [field]: prev[field].includes(value)
-  //       ? prev[field].filter((item) => item !== value)
-  //       : [...prev[field], value],
-  //   }));
-  // };
-
-  const handleSubmit = () => {
-    alert("Form submitted");
-  };
-
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  console.log(data);
+  const admin = JSON.parse(localStorage.getItem("user"));
+  console.log("admin", admin, admin.name);
+
   useEffect(() => {
     const getUser = async () => {
       const token = localStorage.getItem("authToken");
@@ -35,7 +20,7 @@ const Createleadenquiry = () => {
         });
 
         if (res.status === 200) {
-          setData(res.data.data); // Update state with the response data
+          setData(res.data.data);
         }
       } catch (error) {
         console.error("Error fetching data: ", error);
@@ -57,15 +42,13 @@ const Createleadenquiry = () => {
   const [appointedEmployee, setAppointedEmployee] = useState("");
   const [interestedProperty, setInterestedProperty] = useState("");
   const [budget, setBudget] = useState("");
-  const [userid, setUserid] = useState({});
+  const [userid, setUserid] = useState();
   const createLead = async () => {
     if (
       !name ||
       !email ||
       !phoneNumber ||
-      !status ||
       !sourceForm ||
-      !appointedEmployee ||
       interestedProperty.length === 0 ||
       !budget
     ) {
@@ -84,6 +67,7 @@ const Createleadenquiry = () => {
       interestedProperty,
       budget,
       assignedTo: userid,
+      createdBy: admin.name,
     };
 
     try {
@@ -186,25 +170,6 @@ const Createleadenquiry = () => {
               Details
             </Typography>
 
-            {/* Status */}
-            <Typography sx={{ fontWeight: "bold", marginTop: "20px" }}>
-              Status *
-            </Typography>
-            {["Follow-Up", "Appointment", "New Enquiry", "Converted"].map(
-              (s) => (
-                <Chip
-                  key={s}
-                  label={s}
-                  onClick={() => setStatus(s)}
-                  sx={{
-                    marginRight: "10px",
-                    backgroundColor: status === s ? "#4CAF50" : "#f5f5f5",
-                    color: status === s ? "white" : "black",
-                  }}
-                />
-              )
-            )}
-
             {/* Source From */}
             <Typography sx={{ fontWeight: "bold", marginTop: "20px" }}>
               Source From *
@@ -305,9 +270,7 @@ const Createleadenquiry = () => {
             <Typography>
               <strong>Customer Notes:</strong> {customerNotes || "-"}
             </Typography>
-            <Typography>
-              <strong>Status:</strong> {status || "-"}
-            </Typography>
+
             <Typography>
               <strong>Source From:</strong> {sourceForm || "-"}
             </Typography>

@@ -22,7 +22,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import BusinessIcon from "@mui/icons-material/Business";
 import TaskIcon from "@mui/icons-material/Task";
 import { useNavigate } from "react-router-dom";
-import ScheduleIcon from '@mui/icons-material/Schedule';
+import ScheduleIcon from "@mui/icons-material/Schedule";
+import SellIcon from "@mui/icons-material/Sell";
 
 const SidebarMenu = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -45,6 +46,25 @@ const SidebarMenu = () => {
     navigate(path);
   };
 
+  const [admin, setAdmin] = useState({});
+  console.log(admin?.roles);
+  const authToken = localStorage.getItem("authToken");
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+
+    if (user) {
+      try {
+        const parsedUser = JSON.parse(user); // Convert string back to object
+        setAdmin(parsedUser); // Update the state
+        console.log(parsedUser, "decoded user details");
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    } else {
+      console.log("No user data found in localStorage.");
+    }
+  }, []);
   const menuItemStyle = {
     padding: "10px 12px",
     fontSize: "14px",
@@ -90,100 +110,97 @@ const SidebarMenu = () => {
       </MenuItem>
 
       <MenuItem
-        icon={<GroupIcon style={{ color: "#038f05" }} />}
+        icon={<SellIcon style={{ color: "#038f05" }} />}
         style={
-          activeItem === "/customer"
+          activeItem === "/Sales Team"
             ? { ...menuItemStyle, ...activeStyle }
             : menuItemStyle
         }
-        onClick={() => handleNavigation("/customer")}
+        onClick={() => handleNavigation("/sales")}
       >
-        {!collapsed && "Customer"}
+        {!collapsed && "Sales Team"}
       </MenuItem>
+      {admin.roles?.inquiries && (
+        <MenuItem
+          icon={<AssignmentIcon style={{ color: "#038f05" }} />}
+          style={
+            activeItem === "/Enquiries"
+              ? { ...menuItemStyle, ...activeStyle }
+              : menuItemStyle
+          }
+          onClick={() => handleNavigation("/Enquiries")}
+        >
+          {!collapsed && "Enquiries"}
+        </MenuItem>
+      )}
 
-      <MenuItem
-        icon={<AssignmentIcon style={{ color: "#038f05" }} />}
-        style={
-          activeItem === "/leadandinquires"
-            ? { ...menuItemStyle, ...activeStyle }
-            : menuItemStyle
-        }
-        onClick={() => handleNavigation("/leadandinquires")}
-      >
-        {!collapsed && "Lead & Inquiries"}
-      </MenuItem>
+      {admin.roles?.follow_ups && (
+        <MenuItem
+          icon={<EventAvailableIcon style={{ color: "#038f05" }} />} // Changed icon for Follow-Ups
+          style={
+            activeItem === "/followsup"
+              ? { ...menuItemStyle, ...activeStyle }
+              : menuItemStyle
+          }
+          onClick={() => handleNavigation("/followsup")}
+        >
+          {!collapsed && "Follow-Ups"}
+        </MenuItem>
+      )}
+      {admin.roles?.appointment && (
+        <MenuItem
+          icon={<EventNoteIcon style={{ color: "#038f05" }} />} // Changed icon for Appointment
+          style={
+            activeItem === "/Scheduled Visits"
+              ? { ...menuItemStyle, ...activeStyle }
+              : menuItemStyle
+          }
+          onClick={() => handleNavigation("/appointment")}
+        >
+          {!collapsed && "Scheduled Visits"}
+        </MenuItem>
+      )}
 
-      <MenuItem
-        icon={<EventAvailableIcon style={{ color: "#038f05" }} />} // Changed icon for Follow-Ups
-        style={
-          activeItem === "/followsup"
-            ? { ...menuItemStyle, ...activeStyle }
-            : menuItemStyle
-        }
-        onClick={() => handleNavigation("/followsup")}
-      >
-        {!collapsed && "Follow-Ups"}
-      </MenuItem>
+      {admin.roles?.converted && (
+        <MenuItem
+          icon={<CheckCircleIcon style={{ color: "#038f05" }} />}
+          style={
+            activeItem === "/Booked"
+              ? { ...menuItemStyle, ...activeStyle }
+              : menuItemStyle
+          }
+          onClick={() => handleNavigation("/converted")}
+        >
+          {!collapsed && "Booked"}
+        </MenuItem>
+      )}
 
-      <MenuItem
-        icon={<EventNoteIcon style={{ color: "#038f05" }} />} // Changed icon for Appointment
-        style={
-          activeItem === "/appointment"
-            ? { ...menuItemStyle, ...activeStyle }
-            : menuItemStyle
-        }
-        onClick={() => handleNavigation("/appointment")}
-      >
-        {!collapsed && "Appointment"}
-      </MenuItem>
-
-      <MenuItem
-        icon={<ScheduleIcon style={{ color: "#038f05" }} />}
-        style={
-          activeItem === "/schedulevisite"
-            ? { ...menuItemStyle, ...activeStyle }
-            : menuItemStyle
-        }
-        onClick={() => handleNavigation("/schedulevisite")}
-      >
-        {!collapsed && "Scheduled Visits"}
-      </MenuItem>
-
-      <MenuItem
-        icon={<CheckCircleIcon style={{ color: "#038f05" }} />}
-        style={
-          activeItem === "/converted"
-            ? { ...menuItemStyle, ...activeStyle }
-            : menuItemStyle
-        }
-        onClick={() => handleNavigation("/converted")}
-      >
-        {!collapsed && "Converted"}
-      </MenuItem>
-
-      <MenuItem
-        icon={<BusinessIcon style={{ color: "#038f05" }} />}
-        style={
-          activeItem === "/property"
-            ? { ...menuItemStyle, ...activeStyle }
-            : menuItemStyle
-        }
-        onClick={() => handleNavigation("/property")}
-      >
-        {!collapsed && "Property"}
-      </MenuItem>
-
-      <MenuItem
-        icon={<TaskIcon style={{ color: "#038f05" }} />}
-        style={
-          activeItem === "/tasks"
-            ? { ...menuItemStyle, ...activeStyle }
-            : menuItemStyle
-        }
-        onClick={() => handleNavigation("/tasks")}
-      >
-        {!collapsed && "Tasks"}
-      </MenuItem>
+      {admin.roles?.property && (
+        <MenuItem
+          icon={<BusinessIcon style={{ color: "#038f05" }} />}
+          style={
+            activeItem === "/Projects"
+              ? { ...menuItemStyle, ...activeStyle }
+              : menuItemStyle
+          }
+          onClick={() => handleNavigation("/Projects")}
+        >
+          {!collapsed && "Projects"}
+        </MenuItem>
+      )}
+      {admin.roles?.droped && (
+        <MenuItem
+          icon={<TaskIcon style={{ color: "#038f05" }} />}
+          style={
+            activeItem === "/Dropped"
+              ? { ...menuItemStyle, ...activeStyle }
+              : menuItemStyle
+          }
+          onClick={() => handleNavigation("/Dropped")}
+        >
+          {!collapsed && "Dropped"}
+        </MenuItem>
+      )}
     </Menu>
   );
 
