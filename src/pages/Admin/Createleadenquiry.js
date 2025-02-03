@@ -32,6 +32,22 @@ const Createleadenquiry = () => {
 
     getUser();
   }, []);
+
+  const [sales, setSales] = useState([]);
+  console.log(sales, "sales");
+  useEffect(() => {
+    const getSales = async () => {
+      try {
+        const res = await axios.get("/api/sales/");
+        if (res.status === 200) {
+          setSales(res.data);
+        }
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      } 
+    };
+    getSales();
+  }, []);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -39,8 +55,10 @@ const Createleadenquiry = () => {
   const [customerNotes, setCustomerNotes] = useState("");
   const [status, setStatus] = useState("");
   const [sourceForm, setSourceForm] = useState("");
+  const [leadIdentity, setleadIdentity] = useState("");
   const [appointedEmployee, setAppointedEmployee] = useState("");
   const [interestedProperty, setInterestedProperty] = useState("");
+  const[salesname,setSalesname] = useState("")
   const [budget, setBudget] = useState("");
   const [userid, setUserid] = useState();
   const createLead = async () => {
@@ -66,10 +84,11 @@ const Createleadenquiry = () => {
       appointedEmployee,
       interestedProperty,
       budget,
+      leadIdentity,
       assignedTo: userid,
       createdBy: admin.name,
+      salesperson:salesname,
     };
-
     try {
       const res = await axios.post("/api/lead/create", payload, {
         headers: { "Content-Type": "application/json" },
@@ -187,6 +206,40 @@ const Createleadenquiry = () => {
                 }}
               />
             ))}
+            {/* LeadIsentity From */}
+            <Typography sx={{ fontWeight: "bold", marginTop: "20px" }}>
+              Lead Identity *
+            </Typography>
+            {["Hot", "Cold", "Warm"].map((source) => (
+              <Chip
+                key={source}
+                label={source}
+                onClick={() => setleadIdentity(source)}
+                sx={{
+                  marginRight: "10px",
+                  backgroundColor:
+                  leadIdentity === source ? "#4CAF50" : "#f5f5f5",
+                  color: leadIdentity === source ? "white" : "black",
+                }}
+              />
+            ))}
+            {/* LeadIsentity From */}
+            <Typography sx={{ fontWeight: "bold", marginTop: "20px" }}>
+              AssignTo Sales Team *
+            </Typography>
+            {sales.map((source) => (
+              <Chip
+                key={source?.name}
+                label={source?.name}
+                onClick={() => setSalesname(source.name)}
+                sx={{
+                  marginRight: "10px",
+                  backgroundColor:
+                  salesname === source.name ? "#4CAF50" : "#f5f5f5",
+                  color: salesname === source.name ? "white" : "black",
+                }}
+              />
+            ))}
 
             {/* Appointed Employee */}
             <Typography sx={{ fontWeight: "bold", marginTop: "20px" }}>
@@ -275,7 +328,13 @@ const Createleadenquiry = () => {
               <strong>Source From:</strong> {sourceForm || "-"}
             </Typography>
             <Typography>
+              <strong>Lead LeadIdentity</strong> {leadIdentity || "-"}
+            </Typography>
+            <Typography>
               <strong>Appointed Employee:</strong> {appointedEmployee || "-"}
+            </Typography>
+            <Typography>
+              <strong>Sales Team:</strong> {salesname || "-"}
             </Typography>
             <Typography>
               <strong>Interested Property:</strong> {interestedProperty || "-"}

@@ -19,12 +19,12 @@ const Userdetails = () => {
   const [error, setError] = useState("");
 
   const menuItems = [
-    { id: "inquiries", label: "Inquiries" },
+    { id: "inquiries", label: "Enquiries" },
     { id: "follow_ups", label: "Follow-Ups" },
     { id: "appointment", label: "Appointment" },
     { id: "scheduled_visits", label: "Scheduled Visits" },
     { id: "converted", label: "Converted" },
-    { id: "property", label: "Property" },
+    { id: "property", label: "Project" },
     { id: "droped", label: "Droped" },
   ];
 

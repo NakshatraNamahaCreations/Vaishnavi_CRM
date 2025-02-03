@@ -103,7 +103,7 @@ const Dropped = () => {
               title="View"
             />
           </Link>
-          <Link to={`/leadenquiry-update/${params.row?._id}`}>
+          {/* <Link to={`/leadenquiry-update/${params.row?._id}`}>
             <PencilIcon
               style={{
                 width: "18px",
@@ -113,7 +113,7 @@ const Dropped = () => {
               }}
               title="Edit"
             />
-          </Link>
+          </Link> */}
         </div>
       ),
     },
@@ -132,14 +132,14 @@ const Dropped = () => {
         }}
       >
         <Typography variant="h5" sx={{ fontWeight: "bold", color: "#2b3674" }}>
-          Dropped List
+        All Dropped List
         </Typography>
       </Box>
 
       {/* DataGrid Table */}
-      <div style={{ height: 400, width: "100%" }}>
+      <div style={{ width: "100%" }}>
         <DataGrid
-          rows={filteredRows}
+          rows={filteredRows?.filter((item)=> item?.status === "Not Interested")}
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5]}

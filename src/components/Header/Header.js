@@ -45,7 +45,7 @@ const Header = () => {
       try {
         const parsedUser = JSON.parse(user); // Convert string back to object
         setAdmin(parsedUser); // Update the state
-        console.log(parsedUser, "decoded user details");
+        // console.log(parsedUser, "decoded user details");
       } catch (error) {
         console.error("Error parsing user data:", error);
       }

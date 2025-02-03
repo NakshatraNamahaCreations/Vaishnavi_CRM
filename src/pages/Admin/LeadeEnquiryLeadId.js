@@ -16,6 +16,10 @@ import {
   TableCell,
   TableBody,
   Paper,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -24,11 +28,11 @@ import moment from "moment/moment";
 const LeadeEnquiryLeadId = () => {
   const { leadId } = useParams();
 
-  console.log(leadId, "id");
+  console.log(leadId, "idd");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  console.log(data, "leade");
+  // console.log(data, "leade");
   useEffect(() => {
     const getUser = async () => {
       const token = localStorage.getItem("authToken");
@@ -54,7 +58,7 @@ const LeadeEnquiryLeadId = () => {
   }, []);
 
   const findData = data.find((item) => item?._id === leadId);
-  console.log(findData, "findData");
+  // console.log(findData, "findData");
   const [formData, setFormData] = useState({
     sourceForm: "",
     interestedProperty: [],
@@ -100,6 +104,7 @@ const LeadeEnquiryLeadId = () => {
     }
   }, []);
 
+  console.log(findData, "findes");
   const handleSubmitFollowUp = async () => {
     if (!date || !comment || !followupStatus) {
       return alert("Please fill all the fields");
@@ -111,6 +116,8 @@ const LeadeEnquiryLeadId = () => {
       date: moment(date).format("DD-MM-YYYY"),
       comment: comment,
       followupStatus: followupStatus,
+      // new added
+      followupname: findData?.salesperson,
     };
     try {
       const res = await axios.post("/api/followup/", payload);
@@ -220,6 +227,102 @@ const LeadeEnquiryLeadId = () => {
     }
   };
 
+  const [openModal, setOpenModal] = useState(false);
+  // ✅ Open Modal with pre-filled data
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  // ✅ Close Modal
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+  const [edit, setEdit] = useState({});
+  console.log(findData?.fullName, "edit");
+  const [bookingType, setBookingType] = useState("");
+  console.log(bookingType, "bookingType");
+  const [uniteno, setUniteno] = useState("");
+  const [customer, setCustomer] = useState("");
+  const [email, setEmail] = useState("");
+  const [price, setPrice] = useState(0);
+  const [percentage, setPercentage] = useState(0);
+  const [companyname, setCompanyname] = useState("");
+  const [source, setSource] = useState("");
+  const [total, setTotal] = useState(0);
+  useEffect(() => {
+    const calculatedTotal =
+      parseFloat(price) + (parseFloat(price) * parseFloat(percentage)) / 100;
+    setTotal(isNaN(calculatedTotal) ? 0 : calculatedTotal); // Avoid NaN
+  }, [price, percentage]);
+
+  const handleUpdateBook = async () => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8005/api/lead/update-lead/${findData?._id}`, // Pass correct ID
+        {
+          uniteno,
+          price,
+          percentage,
+          total,
+          companyname,
+          bookingtype: bookingType,
+          total: total,
+          confirmBook: true,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Update Success:", response.data);
+      alert(response.data?.message || "Lead updated successfully!");
+      handleCloseModal();
+    } catch (error) {
+      console.error(
+        "Error updating lead status:",
+        error.response?.data || error.message
+      );
+      alert("Failed to update lead. Please try again.");
+    }
+  };
+
+  const [sales, setSales] = useState([]);
+  console.log(sales, "sales");
+  useEffect(() => {
+    const getSales = async () => {
+      try {
+        const res = await axios.get("/api/sales/");
+        if (res.status === 200) {
+          setSales(res.data);
+        }
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+    getSales();
+  }, []);
+
+  const [editassign, setEditassign] = useState(null); // Ensure it's null initially
+  const [acc, setAcc] = useState(true);
+  const [selectedSalesperson, setSelectedSalesperson] = useState("");
+
+  // Function to update salesperson
+  const assignSalesperson = async (salesperson) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8005/api/lead/lead/${editassign._id}`,
+        { salesperson } // Send selected salesperson
+      );
+
+      alert(response.data?.message || "Salesperson updated successfully!");
+      window.location.reload(); // Reload UI to reflect the update
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to update salesperson.");
+    }
+  };
+
   return (
     <Box sx={{ padding: "20px" }}>
       <Grid container spacing={2}>
@@ -312,6 +415,9 @@ const LeadeEnquiryLeadId = () => {
                         <TableCell sx={{ fontWeight: "bold" }}>
                           Status
                         </TableCell>
+                        <TableCell sx={{ fontWeight: "bold" }}>
+                         Created By
+                        </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -330,6 +436,7 @@ const LeadeEnquiryLeadId = () => {
                             <TableCell>
                               {row?.followupStatus || "N/A"}
                             </TableCell>
+                            <TableCell>{row?.followupname || "N/A"}</TableCell>
                           </TableRow>
                         ))
                       ) : (
@@ -462,8 +569,58 @@ const LeadeEnquiryLeadId = () => {
                 }}
               />
             </Box>
-
             <Box sx={{ marginBottom: "10px" }}>
+              <Typography sx={{ fontWeight: "bold", marginBottom: "5px" }}>
+                Assign Sales Person*
+              </Typography>
+              <Chip
+                label={findData?.salesperson}
+                sx={{
+                  marginRight: "10px",
+                  backgroundColor: "#4CAF50",
+                  color: "white",
+                }}
+              />
+            </Box>
+            <Box sx={{ marginBottom: "10px" }}>
+              <Chip
+                label="Reassign Sales Team"
+                sx={{
+                  marginRight: "10px",
+                  backgroundColor: "#4CAF50",
+                  color: "white",
+                }}
+                onClick={() => {
+                  setAcc(!acc);
+                  setEditassign(findData); // Make sure `findData` is correctly set
+                }}
+              />
+            </Box>
+
+            {!acc && (
+              <>
+                {sales?.map((source) => (
+                  <Chip
+                    key={source?.name}
+                    label={source?.name}
+                    onClick={() => {
+                      setSelectedSalesperson(source.name);
+                      assignSalesperson(source.name); // Call API on selection
+                    }}
+                    sx={{
+                      marginRight: "10px",
+                      backgroundColor:
+                        selectedSalesperson === source.name
+                          ? "#4CAF50"
+                          : "#f5f5f5",
+                      color:
+                        selectedSalesperson === source.name ? "white" : "black",
+                    }}
+                  />
+                ))}
+              </>
+            )}
+            {/* <Box sx={{ marginBottom: "10px" }}>
               <Typography sx={{ fontWeight: "bold", marginBottom: "5px" }}>
                 Appointed Employee
               </Typography>
@@ -479,7 +636,7 @@ const LeadeEnquiryLeadId = () => {
               ) : (
                 <Typography>No assigned employee</Typography>
               )}
-            </Box>
+            </Box> */}
             <Box sx={{ marginBottom: "10px" }}>
               <Typography sx={{ fontWeight: "bold", marginBottom: "5px" }}>
                 Budget
@@ -495,21 +652,46 @@ const LeadeEnquiryLeadId = () => {
               />
             </Box>
 
-            <Box sx={{ marginBottom: "10px" }}>
-              <Typography sx={{ fontWeight: "bold", marginBottom: "5px" }}>
-                Booking Status
-              </Typography>
+            {findData?.confirmBook === true ? (
+              <>
+                {" "}
+                <Box sx={{ marginBottom: "10px" }}>
+                  <Typography sx={{ fontWeight: "bold", marginBottom: "5px" }}>
+                    Booked
+                  </Typography>
+                  <Chip
+                    label="Booked"
+                    sx={{
+                      marginRight: "10px",
+                      backgroundColor: "#FF9800",
+                      color: "white",
+                    }}
+                  />
+                </Box>
+              </>
+            ) : (
+              <>
+                <Box sx={{ marginBottom: "10px" }}>
+                  <Typography sx={{ fontWeight: "bold", marginBottom: "5px" }}>
+                    Booking Status
+                  </Typography>
 
-              <Chip
-                label="Confirm Book"
-                sx={{
-                  marginRight: "10px",
-                  backgroundColor: "#FF9800",
-                  color: "white",
-                }}
-                onClick={() => handleUpdateLeadStatus(leadId)}
-              />
-            </Box>
+                  <Chip
+                    label="Confirm Book"
+                    sx={{
+                      marginRight: "10px",
+                      backgroundColor: "#FF9800",
+                      color: "white",
+                    }}
+                    onClick={() => {
+                      handleOpenModal();
+                      setEdit(findData);
+                    }}
+                    // onClick={() => handleUpdateLeadStatus(leadId)}
+                  />
+                </Box>
+              </>
+            )}
 
             {/* Follow-Up and Appointment Chips */}
             <Box sx={{ marginBottom: "10px" }}>
@@ -587,7 +769,10 @@ const LeadeEnquiryLeadId = () => {
                     onChange={(e) => setFollowupStatus(e.target.value)}
                     label="Follow-Up Status *"
                   >
-                    <MenuItem value="Interested">Interested</MenuItem>
+                    <MenuItem value="RNR">RNR</MenuItem>
+                    <MenuItem value="Call Later">Call Later</MenuItem>
+                    <MenuItem value="Interested"> Interested</MenuItem>
+                    <MenuItem value="Not Interested"> Not Interested</MenuItem>
                   </Select>
                 </FormControl>
                 <Button
@@ -685,6 +870,126 @@ const LeadeEnquiryLeadId = () => {
               </Box>
             )}
           </Box>
+
+          {/* ✅ Booking Modal */}
+          <Dialog
+            open={openModal}
+            onClose={handleCloseModal}
+            fullWidth
+            maxWidth="sm"
+          >
+            <DialogTitle>Confirm Booking</DialogTitle>
+            <DialogContent>
+              {/* Booking Details */}
+              <TextField
+                label="Unit No"
+                name="unitNo"
+                value={uniteno}
+                onChange={(e) => setUniteno(e.target.value)}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label={findData?.email}
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                fullWidth
+                disabled
+                margin="normal"
+              />
+              <TextField
+                label={findData?.fullName}
+                name="name"
+                value={customer}
+                onChange={(e) => setCustomer(e.target.value)}
+                fullWidth
+                disabled
+                margin="normal"
+              />
+              <TextField
+                label={findData?.sourceFrom}
+                name="source"
+                value={source}
+                onChange={(e) => setSource(e.target.value)}
+                fullWidth
+                disabled
+                margin="normal"
+              />
+              <TextField
+                label="Price"
+                name="price"
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Percentage"
+                name="percentage"
+                type="number"
+                value={percentage}
+                onChange={(e) => setPercentage(e.target.value)}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Total"
+                name="total"
+                value={total}
+                fullWidth
+                margin="normal"
+                disabled
+              />
+              {bookingType === "partner" && (
+                <>
+                  <TextField
+                    label="Company Name"
+                    name="companyname"
+                    value={companyname}
+                    onChange={(e) => setCompanyname(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                  />
+                </>
+              )}
+              {/* Booking Type Buttons */}
+
+              <Box display="flex" gap={2} mt={2}>
+                <Button
+                  variant={bookingType === "direct" ? "contained" : "outlined"}
+                  color="primary"
+                  onClick={() => setBookingType("direct")}
+                >
+                  Direct Book
+                </Button>
+                <Button
+                  variant={bookingType === "partner" ? "contained" : "outlined"}
+                  color="secondary"
+                  onClick={() => setBookingType("partner")}
+                >
+                  Channel Partner
+                </Button>
+              </Box>
+
+              {/* Fields for Channel Partner */}
+            </DialogContent>
+
+            {/* Modal Actions */}
+            <DialogActions>
+              <Button onClick={handleCloseModal} color="secondary">
+                Cancel
+              </Button>
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={handleUpdateBook}
+              >
+                Booked
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Grid>
       </Grid>
     </Box>

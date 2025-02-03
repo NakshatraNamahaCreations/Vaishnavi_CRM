@@ -41,12 +41,6 @@ const Sales = () => {
   // Media Query for Mobile Screens
   const isMobile = useMediaQuery("(max-width:600px)");
 
-  // Filtered Rows for Search
-  const filteredRows = rows.filter(
-    (row) =>
-      row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   // Handle Edit Row
   const handleEditRow = (row) => {
@@ -162,6 +156,12 @@ const Sales = () => {
     setIsDrawerOpen(true);
   };
 
+  const filteredRows = sales.filter(
+    (row) =>
+      row.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      row.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   // Table Columns
   const columns = [
     {
@@ -214,7 +214,7 @@ const Sales = () => {
             />
           </Link>
           {/* Edit Icon */}
-          <PencilIcon
+          {/* <PencilIcon
             style={{
               width: "18px",
               height: "18px",
@@ -223,7 +223,7 @@ const Sales = () => {
             }}
             title="Edit"
             // onClick={() => handleEditRow(params.row)}
-          />
+          /> */}
           {/* Delete Icon */}
           {/* <TrashIcon
             style={{
@@ -298,8 +298,8 @@ const Sales = () => {
           <TextField
             placeholder="Search User name..."
             variant="outlined"
-            // value={searchTerm}
-            // onChange={(e) => setSearchTerm(e.target.value)}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             sx={{
               width: isMobile ? "100%" : 300,
               "& .MuiOutlinedInput-root": {
@@ -333,7 +333,7 @@ const Sales = () => {
       {/* DataGrid Table */}
       <div style={{ height: 400, width: "100%" }}>
         <DataGrid
-          rows={sales}
+          rows={filteredRows}
           columns={
             isMobile ? columns.filter((col) => col.field !== "number") : columns
           }

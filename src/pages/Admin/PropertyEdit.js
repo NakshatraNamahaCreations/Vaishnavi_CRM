@@ -1,22 +1,23 @@
 import React, { useState } from "react";
 import { Box, Grid, TextField, Typography, Button, Chip } from "@mui/material";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 const PropertyEdit = () => {
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phoneNumber: "",
-    alternatePhoneNumber: "",
-    customerNotes: "",
-    status: "",
-    sourceForm: "",
-    appointedEmployee: "",
-    interestedProperty: [],
-    budget: "",
-    constructionStatus: "",
-    sellingStatus: "",
+    propertyName: "", // ✅ Matches backend
+    propertyType: "",
+    location: "",
+    address: "",
+    amenities: "",
+    availabilityDate: "",
+    size: "",
+    minPrice: "",
+    maxPrice: "",
+    numberOfFloors: "",
+    constructionStatus: "", // ✅ Matches backend
+    sellingStatus: "", // ✅ Matches backend
   });
-
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -24,14 +25,28 @@ const PropertyEdit = () => {
   const handleChipToggle = (field, value) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: value !== prev[field] ? value : "", // ✅ Clears value if clicked twice
     }));
   };
 
-  const handleSubmit = () => {
-    alert("Form submitted");
+  const {id} = useParams();
+  // console.log(id)
+  const [loading, setLoading] = useState(false);
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.put(`/api/properties/${id}`, formData);
+      if (res.status === 200) {
+        alert("Property updated successfully! ✅");
+        window?.location?.assign("/Projects")
+      }
+    } catch (error) {
+      console.error("Error updating property:", error);
+      alert("Failed to update property. ❌");
+    } finally {
+      setLoading(false);
+    }
   };
-
   return (
     <Box sx={{ padding: "20px" }}>
       <Grid container spacing={2}>
@@ -57,8 +72,8 @@ const PropertyEdit = () => {
               variant="outlined"
               margin="normal"
               placeholder="Enter Name"
-              value={formData.fullName}
-              onChange={(e) => handleInputChange("fullName", e.target.value)}
+              value={formData.propertyName}
+              onChange={(e) => handleInputChange("propertyName", e.target.value)}
             />
             <TextField
               label="Property Type *"
@@ -66,8 +81,8 @@ const PropertyEdit = () => {
               variant="outlined"
               margin="normal"
               placeholder="Enter Property Type"
-              value={formData.email}
-              onChange={(e) => handleInputChange("email", e.target.value)}
+              value={formData.propertyType}
+              onChange={(e) => handleInputChange("propertyType", e.target.value)}
             />
             <TextField
               label="Location *"
@@ -75,8 +90,8 @@ const PropertyEdit = () => {
               variant="outlined"
               margin="normal"
               placeholder="Enter Location"
-              value={formData.phoneNumber}
-              onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+              value={formData.location}
+              onChange={(e) => handleInputChange("location", e.target.value)}
             />
             <TextField
               label="Address"
@@ -86,9 +101,9 @@ const PropertyEdit = () => {
               placeholder="Enter Address"
               multiline
               rows={2}
-              value={formData.alternatePhoneNumber}
+              value={formData.address}
               onChange={(e) =>
-                handleInputChange("alternatePhoneNumber", e.target.value)
+                handleInputChange("address", e.target.value)
               }
             />
           </Box>
@@ -112,8 +127,8 @@ const PropertyEdit = () => {
             variant="outlined"
             margin="normal"
             placeholder="Enter Amenities"
-            value={formData.customerNotes}
-            onChange={(e) => handleInputChange("customerNotes", e.target.value)}
+            value={formData.amenities}
+            onChange={(e) => handleInputChange("amenities", e.target.value)}
           />
           <TextField
             label="Availability Date *"
@@ -121,8 +136,9 @@ const PropertyEdit = () => {
             variant="outlined"
             type="date"
             margin="normal"
-            value={formData.status}
-            onChange={(e) => handleInputChange("status", e.target.value)}
+            value={formData.availabilityDate}
+            onChange={(e) => handleInputChange("availabilityDate", e.target.value)}
+            InputLabelProps={{ shrink: true }}
           />
           <TextField
             label="Size(sq ft) *"
@@ -130,8 +146,8 @@ const PropertyEdit = () => {
             variant="outlined"
             margin="normal"
             placeholder="Enter Size(sq ft)"
-            value={formData.sourceForm}
-            onChange={(e) => handleInputChange("sourceForm", e.target.value)}
+            value={formData.size}
+            onChange={(e) => handleInputChange("size", e.target.value)}
           />
           <TextField
             label="Min. Price *"
@@ -139,8 +155,8 @@ const PropertyEdit = () => {
             variant="outlined"
             margin="normal"
             placeholder="Enter Min. Price"
-            value={formData.budget}
-            onChange={(e) => handleInputChange("budget", e.target.value)}
+            value={formData.minPrice}
+            onChange={(e) => handleInputChange("minPrice", e.target.value)}
           />
           <TextField
             label="Max. Price *"
@@ -148,8 +164,8 @@ const PropertyEdit = () => {
             variant="outlined"
             margin="normal"
             placeholder="Enter Max. Price"
-            value={formData.interestedProperty}
-            onChange={(e) => handleInputChange("interestedProperty", e.target.value)}
+            value={formData.maxPrice}
+            onChange={(e) => handleInputChange("maxPrice", e.target.value)}
           />
           <TextField
             label="Number of Floors *"
@@ -157,6 +173,8 @@ const PropertyEdit = () => {
             variant="outlined"
             margin="normal"
             placeholder="Enter Number of Floors"
+            value={formData.numberOfFloors}
+            onChange={(e) => handleInputChange("numberOfFloors", e.target.value)}
           />
 
           <Box sx={{ marginBottom: "10px" }}>

@@ -24,6 +24,7 @@ import TaskIcon from "@mui/icons-material/Task";
 import { useNavigate } from "react-router-dom";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import SellIcon from "@mui/icons-material/Sell";
+import ReportIcon from "@mui/icons-material/Report";
 
 const SidebarMenu = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -47,7 +48,7 @@ const SidebarMenu = () => {
   };
 
   const [admin, setAdmin] = useState({});
-  console.log(admin?.roles);
+  // console.log(admin?.roles);
   const authToken = localStorage.getItem("authToken");
 
   useEffect(() => {
@@ -57,7 +58,7 @@ const SidebarMenu = () => {
       try {
         const parsedUser = JSON.parse(user); // Convert string back to object
         setAdmin(parsedUser); // Update the state
-        console.log(parsedUser, "decoded user details");
+        // console.log(parsedUser, "decoded user details");
       } catch (error) {
         console.error("Error parsing user data:", error);
       }
@@ -112,7 +113,7 @@ const SidebarMenu = () => {
       <MenuItem
         icon={<SellIcon style={{ color: "#038f05" }} />}
         style={
-          activeItem === "/Sales Team"
+          activeItem === "/sales"
             ? { ...menuItemStyle, ...activeStyle }
             : menuItemStyle
         }
@@ -151,7 +152,7 @@ const SidebarMenu = () => {
         <MenuItem
           icon={<EventNoteIcon style={{ color: "#038f05" }} />} // Changed icon for Appointment
           style={
-            activeItem === "/Scheduled Visits"
+            activeItem === "/appointment"
               ? { ...menuItemStyle, ...activeStyle }
               : menuItemStyle
           }
@@ -165,7 +166,7 @@ const SidebarMenu = () => {
         <MenuItem
           icon={<CheckCircleIcon style={{ color: "#038f05" }} />}
           style={
-            activeItem === "/Booked"
+            activeItem === "/converted"
               ? { ...menuItemStyle, ...activeStyle }
               : menuItemStyle
           }
@@ -201,6 +202,18 @@ const SidebarMenu = () => {
           {!collapsed && "Dropped"}
         </MenuItem>
       )}
+
+      <MenuItem
+        icon={<ReportIcon style={{ color: "#038f05" }} />}
+        style={
+          activeItem === "/report"
+            ? { ...menuItemStyle, ...activeStyle }
+            : menuItemStyle
+        }
+        onClick={() => handleNavigation("/report")}
+      >
+        {!collapsed && "Report"}
+      </MenuItem>
     </Menu>
   );
 

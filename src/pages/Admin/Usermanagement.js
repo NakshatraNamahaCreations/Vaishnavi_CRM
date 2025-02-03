@@ -40,12 +40,7 @@ const Usermanagement = () => {
   // Media Query for Mobile Screens
   const isMobile = useMediaQuery("(max-width:600px)");
 
-  // Filtered Rows for Search
-  const filteredRows = rows.filter(
-    (row) =>
-      row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
 
   // Handle Edit Row
   const handleEditRow = (row) => {
@@ -170,6 +165,14 @@ const Usermanagement = () => {
     setIsDrawerOpen(true);
   };
 
+  // Filtered Rows for Search
+  const filteredRows = data.filter(
+    (row) =>
+      row.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      row.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+
   // Table Columns
   const columns = [
     // { field: "id", headerName: "SL", flex: 0.3 },
@@ -207,7 +210,7 @@ const Usermanagement = () => {
             />
           </Link>
           {/* Edit Icon */}
-          <PencilIcon
+          {/* <PencilIcon
             style={{
               width: "18px",
               height: "18px",
@@ -216,7 +219,7 @@ const Usermanagement = () => {
             }}
             title="Edit"
             // onClick={() => handleEditRow(params.row)}
-          />
+          /> */}
           {/* Delete Icon */}
           {/* <TrashIcon
             style={{
@@ -326,7 +329,7 @@ const Usermanagement = () => {
       {/* DataGrid Table */}
       <div style={{ height: 400, width: "100%" }}>
         <DataGrid
-          rows={data}
+          rows={filteredRows}
           columns={
             isMobile ? columns.filter((col) => col.field !== "number") : columns
           }

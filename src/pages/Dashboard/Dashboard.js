@@ -23,13 +23,16 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { styled } from "@mui/system";
-
 import follower from "../../assets/image/follower.png";
 import info from "../../assets/image/info.png";
 import schedule from "../../assets/image/schedule.png";
+import planning from "../../assets/image/planning.png";
+import lightbulb from "../../assets/image/lightbulb.png";
 import registation from "../../assets/image/registration.png";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import moment from "moment";
+import { DataGrid } from "@mui/x-data-grid";
 
 ChartJS.register(
   BarElement,
@@ -41,10 +44,8 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-
-
-const[data,setData]= useState([])
-const[data1,setData1]= useState([])
+  const [data, setData] = useState([]);
+  const [data1, setData1] = useState([]);
 
   useEffect(() => {
     const getAllFollowUps = async () => {
@@ -55,13 +56,12 @@ const[data1,setData1]= useState([])
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-       
-      } 
+      }
     };
 
     getAllFollowUps();
   }, []);
- 
+
   useEffect(() => {
     const getAllFollowUps = async () => {
       try {
@@ -71,13 +71,12 @@ const[data1,setData1]= useState([])
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-       
-      } 
+      }
     };
 
     getAllFollowUps();
   }, []);
-  const[lead,setLead] = useState([])
+  const [lead, setLead] = useState([]);
   useEffect(() => {
     const getAllLeads = async () => {
       const token = localStorage.getItem("authToken");
@@ -92,36 +91,33 @@ const[data1,setData1]= useState([])
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-       
-      } 
+      }
     };
 
     getAllLeads();
   }, []);
 
-// total ragistrations
-const [totalRegistrations, setTotalRegistrations] = useState([]);
+  // total ragistrations
+  const [totalRegistrations, setTotalRegistrations] = useState([]);
 
-useEffect(() => {
-  const getRagistrations = async () => {
-    try {
-      const res = await axios.get("/api/admin/", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-      });
-      if (res.status === 200) {
-        setTotalRegistrations(res.data.data || []);
+  useEffect(() => {
+    const getRagistrations = async () => {
+      try {
+        const res = await axios.get("/api/admin/", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        });
+        if (res.status === 200) {
+          setTotalRegistrations(res.data.data || []);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-     
-    } 
-  };
+    };
 
-  getRagistrations();
-}, []);
-
+    getRagistrations();
+  }, []);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [timePeriod, setTimePeriod] = useState("Weekly");
@@ -131,8 +127,30 @@ useEffect(() => {
     setTimePeriod(event.target.value);
   };
 
+  const [properties, setProperties] = useState([]);
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const res = await axios.get("/api/properties/");
+        if (res.status === 200) {
+          setProperties(res.data.data || []);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError("Error fetching data. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProperties();
+  }, []);
+
+  const dropedData = lead.filter((item) => item.status === "Not Interested");
+  const bookedData = lead.filter((item) => item.confirmBook === true);
 
   const dataCards = [
     {
@@ -140,31 +158,44 @@ useEffect(() => {
       value: totalRegistrations?.length,
       icon: registation,
       link: "/usermanagement",
-      
     },
     {
       title: "Total Inquiries",
       value: lead?.length,
       icon: info,
-      link: "/leadandinquires",
-     
+      link: "/Enquiries",
     },
     {
       title: "Follow-Ups",
       value: data1.length,
       icon: follower,
       link: "/followsup",
-      
     },
     {
-      title: "Total Appointments",
+      title: "Total Scheduled",
       value: data.length,
       icon: schedule,
       link: "/appointment",
-    
+    },
+    {
+      title: "Droped",
+      value: dropedData.length,
+      icon: follower,
+      link: "/Dropped",
+    },
+    {
+      title: "Poject",
+      value: properties?.length,
+      icon: planning,
+      link: "/Projects",
+    },
+    {
+      title: "Booked",
+      value: bookedData.length,
+      icon: lightbulb,
+      link: "/converted",
     },
   ];
-
 
   const chartData = {
     labels: [
@@ -275,6 +306,62 @@ useEffect(() => {
     borderRadius: "12px",
     textAlign: "center",
   }));
+  const [reported, setReported] = useState([]);
+  useEffect(() => {
+    const getAllLeads = async () => {
+      const token = localStorage.getItem("authToken");
+      try {
+        const res = await axios.get("/api/lead/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (res.status === 200) {
+          setReported(res.data.data || []); // Update the `data` state with fetched data
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError("Error fetching data. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getAllLeads();
+  }, []);
+
+  const columns = [
+    {
+      field: "slNo",
+      headerName: "Sl No",
+      flex: 0.5,
+      renderCell: (params) =>
+        params.api.getRowIndexRelativeToVisibleRows(params.id) + 1,
+    },
+    {
+      field: "createdAt",
+      headerName: "Date",
+      flex: 1,
+      renderCell: (params) =>
+        params.value ? moment(params.value).format("YYYY-MM-DD") : "N/A",
+    },
+    { field: "fullName", headerName: "Customer Name", flex: 1 },
+    { field: "email", headerName: "Email", flex: 1 },
+    { field: "phoneNumber", headerName: "Phone Number", flex: 1 },
+    { field: "interestedProperty", headerName: "Interested Property", flex: 1 },
+    {
+      field: "salesperson",
+      headerName: "Sales Person",
+      flex: 1,
+    },
+    {
+      field: "createdBy",
+      headerName: "Created By",
+      flex: 1,
+    },
+    { field: "sourceFrom", headerName: "Source", flex: 1 },
+  ];
+
   return (
     <Box
       sx={{
@@ -313,7 +400,6 @@ useEffect(() => {
               >
                 Overview
               </Typography>
-             
             </Box>
 
             {/* Cards Section */}
@@ -331,9 +417,13 @@ useEffect(() => {
               {dataCards.map((card, index) => (
                 <Grid item xs={12} md={3} key={index} sx={{}}>
                   <Card
-                    onClick={() => {setActiveIndex(index);navigate(card.link)}}
+                    onClick={() => {
+                      setActiveIndex(index);
+                      navigate(card.link);
+                    }}
                     sx={{
                       // padding: 1,
+                      marginBottom: 3,
                       borderRadius: 2,
                       backgroundColor:
                         activeIndex === index ? "#E3F2FD" : "#fff", // Highlight active card
@@ -378,7 +468,6 @@ useEffect(() => {
                         >
                           {card.value}
                         </Typography>
-                        
                       </Box>
                       <img
                         src={card.icon}
@@ -406,15 +495,12 @@ useEffect(() => {
             </Grid>
 
             {/* Chart Section */}
-           
           </Box>
         </Grid>
 
         {/* Sidebar (30%) */}
-    
       </Grid>
-
-      {/* <Card
+      <Card
         sx={{
           padding: 3,
           marginBottom: 3,
@@ -430,7 +516,6 @@ useEffect(() => {
             backgroundColor: "white",
           }}
         >
-       
           <Box
             sx={{
               display: "flex",
@@ -446,123 +531,33 @@ useEffect(() => {
                 fontFamily: "'Poppins', sans-serif",
               }}
             >
-              Recent Payments
+              Reports
             </Typography>
-       
-          </Box>
-
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: "15% 20% 20% 15% 10% 10% 10%",
-              backgroundColor: "#f1f5f9",
-              padding: "8px 12px",
-              borderRadius: "8px",
-              fontWeight: "bold",
-              fontSize: "12px",
-              color: "#2b3674",
-            }}
-          >
-            <Typography
-              sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "14px" }}
-            >
-              Name
-            </Typography>
-       
-            <Typography
-              sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "14px" }}
-            >
-              Email
-            </Typography>
-            <Typography
-              sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "14px" }}
-            >
-              Payment Date
-            </Typography>
-          
-            <Typography
-              sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "14px" }}
-            >
-              Amount (₹)
-            </Typography>
-            <Typography
-              sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "14px" }}
-            >
-              Status
+            <Typography>
+              <Link to="/report">View All</Link>
             </Typography>
           </Box>
 
-    
-          <Box
-            sx={{
-              marginTop: 2,
-              borderRadius: "8px",
-            }}
-          >
-            {paymentRows.map((row) => (
-              <Box
-                key={row.id}
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: "15% 20% 20% 15% 10% 10% 10%",
-                  alignItems: "center",
-                  padding: "8px 12px",
-                  borderBottom: "1px solid #f1f5f9",
-                  "&:last-child": { borderBottom: "none" },
-                  fontSize: "12px",
-                  color: "#2b3674",
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontFamily: "'Poppins', sans-serif",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    fontSize: "12px",
-                  }}
-                >
-                  {row.name}
-                </Typography>
-                
-                <Typography
-                  sx={{
-                    fontFamily: "'Poppins', sans-serif",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    fontSize: "12px",
-                  }}
-                >
-                  {row.email}
-                </Typography>
-                <Typography
-                  sx={{
-                    fontFamily: "'Poppins', sans-serif",
-                    textAlign: "start",
-                    fontSize: "12px",
-                  }}
-                >
-                  {row.paymentDate}
-                </Typography>
-             
-                <Typography
-                  sx={{
-                    fontFamily: "'Poppins', sans-serif",
-                    textAlign: "start",
-                    fontSize: "12px",
-                  }}
-                >
-                  ₹{row.amount.toLocaleString()}
-                </Typography>
-                <Box sx={{ textAlign: "start" }}>
-                  <StatusChip1 status={row.status}>{row.status}</StatusChip1>
-                </Box>
-              </Box>
-            ))}
-          </Box>
+          <div style={{ width: "100%" }}>
+            <DataGrid
+              rows={reported.slice(0, 7)}
+              columns={columns}
+              pageSize={5}
+              rowsPerPageOptions={[5]}
+              disableSelectionOnClick
+              getRowId={(row) => row?._id} // Map `row._id` to the row's ID
+              loading={loading}
+              components={{
+                NoRowsOverlay: () => (
+                  <Typography sx={{ textAlign: "center", marginTop: "20px" }}>
+                    No data available.
+                  </Typography>
+                ),
+              }}
+            />
+          </div>
         </Box>
-      </Card> */}
+      </Card>
     </Box>
   );
 };

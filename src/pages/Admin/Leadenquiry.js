@@ -76,7 +76,7 @@ const Leadenquiry = () => {
     { field: "phoneNumber", headerName: "Phone Number", flex: 1 },
     { field: "interestedProperty", headerName: "Interested Property", flex: 1 },
     {
-      field: "appointedEmployee",
+      field: "salesperson",
       headerName: "Sales Person",
       flex: 1,
     },
@@ -103,7 +103,7 @@ const Leadenquiry = () => {
               title="View"
             />
           </Link>
-          <Link to={`/leadenquiry-update/${params.row?._id}`}>
+          {/* <Link to={`/leadenquiry-update/${params.row?._id}`}>
             <PencilIcon
               style={{
                 width: "18px",
@@ -113,7 +113,7 @@ const Leadenquiry = () => {
               }}
               title="Edit"
             />
-          </Link>
+          </Link> */}
         </div>
       ),
     },
@@ -142,7 +142,7 @@ const Leadenquiry = () => {
       </Box>
 
       {/* DataGrid Table */}
-      <div style={{ height: 400, width: "100%" }}>
+      <div style={{  width: "100%" }}>
         <DataGrid
           rows={filteredRows}
           columns={columns}

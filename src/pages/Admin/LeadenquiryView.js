@@ -92,6 +92,22 @@ const EnquiryEdit = () => {
     }
   }, []);
 
+  const [sales, setSales] = useState([]);
+  console.log(sales, "sales");
+  useEffect(() => {
+    const getSales = async () => {
+      try {
+        const res = await axios.get("/api/sales/");
+        if (res.status === 200) {
+          setSales(res.data);
+        }
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+    getSales();
+  }, []);
+
   console.log(admin, "admin state"); // The updated admin state
   console.log(admin?.id, "user ID"); // Access user ID from state if available
 
@@ -190,6 +206,30 @@ const EnquiryEdit = () => {
       );
     }
   };
+
+  const [editassign, setEditassign] = useState(null); // Ensure it's null initially
+  const [acc, setAcc] = useState(true);
+  const [selectedSalesperson, setSelectedSalesperson] = useState("");
+  
+  // Function to update salesperson
+  const assignSalesperson = async (salesperson) => {
+  
+    try {
+      const response = await axios.put(
+        `http://localhost:8005/api/lead/lead/${editassign._id}`,
+        { salesperson } // Send selected salesperson
+      );
+  
+      alert(response.data?.message || "Salesperson updated successfully!");
+      window.location.reload(); // Reload UI to reflect the update
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to update salesperson.");
+    }
+  };
+  
+
+
+
   return (
     <Box sx={{ padding: "20px" }}>
       <Grid container spacing={2}>
@@ -287,10 +327,38 @@ const EnquiryEdit = () => {
 
             <Box sx={{ marginBottom: "10px" }}>
               <Typography sx={{ fontWeight: "bold", marginBottom: "5px" }}>
+                Assign Sales Person*
+              </Typography>
+              <Chip
+                label={findData?.salesperson}
+                sx={{
+                  marginRight: "10px",
+                  backgroundColor: "#4CAF50",
+                  color: "white",
+                }}
+              />
+            </Box>
+
+            <Box sx={{ marginBottom: "10px" }}>
+              <Typography sx={{ fontWeight: "bold", marginBottom: "5px" }}>
                 Source From *
               </Typography>
               <Chip
                 label={findData?.sourceFrom}
+                sx={{
+                  marginRight: "10px",
+                  backgroundColor: "#4CAF50",
+                  color: "white",
+                }}
+              />
+            </Box>
+
+            <Box sx={{ marginBottom: "10px" }}>
+              <Typography sx={{ fontWeight: "bold", marginBottom: "5px" }}>
+                Lead Identity *
+              </Typography>
+              <Chip
+                label={findData?.leadIdentity}
                 sx={{
                   marginRight: "10px",
                   backgroundColor: "#4CAF50",
@@ -345,7 +413,42 @@ const EnquiryEdit = () => {
                 }}
               />
             </Box>
-
+            <Box sx={{ marginBottom: "10px" }}>
+              <Chip
+                label="Reassign Sales Team"
+                sx={{
+                  marginRight: "10px",
+                  backgroundColor: "#4CAF50",
+                  color: "white",
+                }}
+                onClick={() => {
+                  setAcc(!acc);
+                  setEditassign(findData); // Make sure `findData` is correctly set
+                }}
+              />
+            </Box>
+            
+            {!acc && (
+  <>
+    {sales?.map((source) => (
+      <Chip
+        key={source?.name}
+        label={source?.name}
+        onClick={() => {
+          setSelectedSalesperson(source.name);
+          assignSalesperson(source.name); // Call API on selection
+        }}
+        sx={{
+          marginRight: "10px",
+          backgroundColor:
+            selectedSalesperson === source.name ? "#4CAF50" : "#f5f5f5",
+          color: selectedSalesperson === source.name ? "white" : "black",
+        }}
+      />
+    ))}
+  </>
+)}
+           
             {/* Follow-Up and Appointment Chips */}
             <Box sx={{ marginBottom: "10px" }}>
               <Chip
